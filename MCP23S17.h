@@ -44,9 +44,9 @@ class MCP23S17
 		};
 		MCP23S17(uint8_t SelectPin);
 		MCP23S17(uint8_t SelectPin, uint8_t IntAPin, uint8_t IntBPin, uint8_t Address);
-		void pinMode(uint8_t Pin, uint8_t Mode);
-		void digitalWrite(uint8_t Pin, uint8_t PinStatus);
-		uint8_t digitalRead(uint8_t Pin);
+		void PinMode(uint8_t Pin, uint8_t Mode);
+		void DigitalWrite(uint8_t Pin, uint8_t PinStatus);
+		uint8_t DigitalRead(uint8_t Pin);
 		SPISettings* GetSPISettings();
 	private:
 		SPISettings ConnectionSettings;
@@ -59,8 +59,8 @@ class MCP23S17
 		uint8_t IntAPin;
 		uint8_t IntBPin;
 		uint8_t Address;
-		void WriteRegister(uint8_t RegisterToWrite, uint8_t RegisterContents);
-		uint8_t ReadRegister(uint8_t RegisterToRead);
+		void WriteRegister(Registers RegisterToWrite, uint8_t RegisterContents);
+		uint8_t ReadRegister(Registers RegisterToRead);
 };
 
 #endif

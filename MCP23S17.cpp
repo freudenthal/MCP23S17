@@ -1,9 +1,9 @@
 #include <MCP23S17.h>
 
-static uint8_t BaseOpcode = 64;
-static uint8_t ReadWriteBit = 0;
-static uint8_t BankAPins = 7;
-static uint8_t BankBPins = 15;
+const uint8_t MCP23S17::BaseOpcode = 64;
+const uint8_t MCP23S17::ReadWriteBit = 0;
+const uint8_t MCP23S17::BankAPins = 7;
+const uint8_t MCP23S17::BankBPins = 15;
 
 MCP23S17::MCP23S17(uint8_t _SelectPin) : MCP23S17(_SelectPin, 255, 255, 0)
 {
@@ -30,7 +30,7 @@ MCP23S17::MCP23S17(uint8_t _SelectPin, uint8_t _IntAPin, uint8_t _IntBPin, uint8
 	DeviceOpcode = BaseOpcode | Address;
 }
 
-void MCP23S17::pinMode(uint8_t Pin, uint8_t Mode)
+void MCP23S17::PinMode(uint8_t Pin, uint8_t Mode)
 {
 	//Mode 0 is input, 1 is output, 2 is pullup
 	Mode = constrain(Mode,0,2);
@@ -51,7 +51,7 @@ void MCP23S17::pinMode(uint8_t Pin, uint8_t Mode)
 	}
 }
 
-void MCP23S17::digitalWrite(uint8_t Pin, uint8_t PinStatus)
+void MCP23S17::DigitalWrite(uint8_t Pin, uint8_t PinStatus)
 {
 	Registers RegisterToWrite = (Pin <= BankAPins) ? Registers::OLATA : Registers::OLATB;
 	uint8_t RegisterContents = ReadRegister(RegisterToWrite);
@@ -60,7 +60,7 @@ void MCP23S17::digitalWrite(uint8_t Pin, uint8_t PinStatus)
 	WriteRegister(RegisterToWrite, RegisterContents);
 }
 
-uint8_t MCP23S17::digitalRead(uint8_t Pin)
+uint8_t MCP23S17::DigitalRead(uint8_t Pin)
 {
 	Registers RegisterToRead = (Pin <= BankAPins) ? Registers::OLATA : Registers::OLATB;
 	uint8_t BitToRead = (Pin <= BankAPins) ? Pin : (Pin - 8);
@@ -68,7 +68,7 @@ uint8_t MCP23S17::digitalRead(uint8_t Pin)
 	return bitRead(RegisterContents, BitToRead);
 }
 
-void WriteRegister(uint8_t RegisterToWrite, uint8_t RegisterContents)
+void MCP23S17::WriteRegister(Registers RegisterToWrite, uint8_t RegisterContents)
 {
 	uint8_t OpCode = DeviceOpcode;
 	bitWrite(OpCode,0,false);
@@ -76,13 +76,13 @@ void WriteRegister(uint8_t RegisterToWrite, uint8_t RegisterContents)
 	SPI.transfer( 0 );
 	digitalWrite(SelectPin,LOW);
 	SPI.transfer( OpCode );
-	SPI.transfer( RegisterToWrite );
+	SPI.transfer( static_cast<uint8_t>(RegisterToWrite) );
 	SPI.transfer( RegisterContents );
 	digitalWrite(SelectPin, HIGH);
 	SPI.endTransaction();
 }
 
-uint8_t ReadRegister(uint8_t RegisterToRead)
+uint8_t MCP23S17::ReadRegister(Registers RegisterToRead)
 {
 	uint8_t OpCode = DeviceOpcode;
 	bitWrite(OpCode,0,true);
@@ -90,7 +90,7 @@ uint8_t ReadRegister(uint8_t RegisterToRead)
 	SPI.transfer( 0 );
 	digitalWrite(SelectPin,LOW);
 	SPI.transfer( OpCode );
-	SPI.transfer( RegisterToRead );
+	SPI.transfer( static_cast<uint8_t>(RegisterToRead) );
 	uint8_t RegisterContents = SPI.transfer( 0 );
 	digitalWrite(SelectPin, HIGH);
 	SPI.endTransaction();
