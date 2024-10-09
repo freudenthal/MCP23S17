@@ -62,7 +62,7 @@ void MCP23S17::DigitalWrite(uint8_t Pin, uint8_t PinStatus)
 
 uint8_t MCP23S17::DigitalRead(uint8_t Pin)
 {
-	Registers RegisterToRead = (Pin <= BankAPins) ? Registers::OLATA : Registers::OLATB;
+	Registers RegisterToRead = (Pin <= BankAPins) ? Registers::GPIOA : Registers::GPIOA;
 	uint8_t BitToRead = (Pin <= BankAPins) ? Pin : (Pin - 8);
 	uint8_t RegisterContents = ReadRegister(RegisterToRead);
 	return bitRead(RegisterContents, BitToRead);
